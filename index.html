@@ -418,37 +418,48 @@
 
         function handleKeyPress(e) { if(e.key === 'Enter') sendChat(); }
 
-        function sendChat() {
+        async function sendChat() {
     const input = document.getElementById('chatInput');
     const chatWindow = document.getElementById('chatWindow');
     const userText = input.value.trim();
     if (!userText) return;
 
-    // Show what you typed
+    // Show User Message
     const userBubble = document.createElement('div');
     userBubble.className = 'chat-bubble user';
     userBubble.innerText = userText;
     chatWindow.appendChild(userBubble);
     input.value = '';
 
-    // NEW LOGIC: Binder-Aware Routing
-    if (currentActiveBinder === 'Science Notes') {
-        const scienceReply = processKnowledgeQuery(userText.toLowerCase());
-        if (scienceReply) {
-            addBubble(scienceReply);
-        } else {
-            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${userText.toLowerCase()}`)
-                .then(res => res.json())
-                .then(data => addBubble("📚 Dictionary: " + data[0].meanings[0].definitions[0].definition))
-                .catch(() => addBubble("🔬 Science engine couldn't find that term."));
-        }
-    } else if (currentActiveBinder === 'Math Workbook') {
-        const mathReply = processMathQuery(userText);
-        if (mathReply) {
-            addBubble(mathReply);
-        } else {
-            addBubble("📐 Math engine says: Please enter a valid equation (e.g., 5 * 5).");
-        }
+    // Add thinking indicator
+    const thinkingBubble = document.createElement('div');
+    thinkingBubble.className = 'chat-bubble gemini';
+    thinkingBubble.innerHTML = "<em>Thinking...</em>";
+    chatWindow.appendChild(thinkingBubble);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    // Direct Gemini API Call (No backend folder needed!)
+    const API_KEY = "YOUR_GEMINI_API_KEY"; // REPLACE WITH YOUR ACTUAL KEY
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: userText }] }]
+            })
+        });
+
+        const data = await response.json();
+        chatWindow.removeChild(thinkingBubble);
+        
+        // Extract the reply
+        const reply = data.candidates[0].content.parts[0].text;
+        addBubble(reply);
+    } catch (error) {
+        chatWindow.removeChild(thinkingBubble);
+        addBubble("⚠️ Connection error. Please check your API key.");
     }
 }
         function toggleTheme() {
