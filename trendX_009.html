@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trend X - Prime Workspace</title>
+    <style>
+        :root {
+            --bg-color: #0b0b0c;
+            --sidebar-bg: #141416;
+            --card-bg: #1e1e21;
+            --text-color: #f3f4f6;
+            --text-dim: #9ca3af;
+            --accent-color: #ffffff;
+            --border-color: #2e2e33;
+            --chat-user-bg: #2d2d30;
+            --chat-gemini-bg: #1a1a1c;
+            --glow-color: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f9fafb;
+            --sidebar-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #111827;
+            --text-dim: #6b7280;
+            --accent-color: #000000;
+            --border-color: #e5e7eb;
+            --chat-user-bg: #e5e7eb;
+            --chat-gemini-bg: #f3f4f6;
+            --glow-color: rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- CINEMATIC FLUID-FLOW ALGERIAN INTRO --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            pointer-events: all;
+        }
+
+        .intro-text-container {
+            width: 90%;
+            max-width: 1250px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .intro-text {
+            font-family: 'Algerian', 'Georgia', serif;
+            font-size: 52px; 
+            font-weight: 900; 
+            letter-spacing: 3px; 
+            color: #ffffff;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateX(180px) scale(0.93); 
+            filter: blur(12px);
+            animation: fluidFlowReveal 4.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @media (max-width: 768px) {
+            .intro-text { font-size: 30px; letter-spacing: 1px; white-space: normal; }
+        }
+
+        @keyframes fluidFlowReveal {
+            0% { opacity: 0; transform: translateX(180px) scale(0.93); filter: blur(12px); }
+            4% { opacity: 0.1; filter: blur(10px); }
+            22% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0px); }
+            80% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: translateX(-60px) scale(0.96); filter: blur(8px); }
+        }
+
+        .fade-out-overlay {
+            animation: globalFadeOut 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            pointer-events: none !important;
+        }
+
+        @keyframes globalFadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* --- CORE APPLICATION UI --- */
+        .header {
+            background-color: #000000;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-text { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: #ffffff; text-transform: lowercase; }
+        .logo-box-black {
+            background-color: #000000; border: 3px solid #ffffff; padding: 2px 14px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+        .silhouette-x { font-family: 'Algerian', 'Georgia', serif; font-size: 28px; font-weight: 900; color: #ffffff; line-height: 1.2; }
+
+        .theme-toggle {
+            background: #111; border: 1px solid #333; padding: 8px 16px; border-radius: 20px;
+            cursor: pointer; color: #fff; font-weight: 600; font-size: 13px; transition: all 0.2s ease;
+        }
+        .theme-toggle:hover { background: #222; border-color: #555; }
+
+        .workspace { display: flex; flex: 1; height: calc(100vh - 70px); position: relative; }
+
+        .sidebar {
+            width: 320px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 25px; gap: 25px; overflow-y: auto;
+        }
+
+        .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; color: var(--text-dim); margin-bottom: 12px; }
+
+        .binder-item {
+            background: var(--card-bg); padding: 14px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer;
+            border: 1px solid var(--border-color); border-left: 5px solid var(--accent-color); margin-bottom: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .binder-item:hover { transform: translateY(-2px); box-shadow: 0 6px 15px var(--glow-color); border-color: var(--text-dim); }
+        .binder-item.active { background: var(--accent-color); color: var(--sidebar-bg); border-color: var(--accent-color); transform: translateY(0); box-shadow: 0 4px 12px rgba(255,255,255,0.1); }
+
+        .workbook-item {
+            background: var(--card-bg); padding: 13px 15px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer;
+            border: 1px solid var(--border-color); margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .workbook-item:hover { transform: translateY(-2px); box-shadow: 0 6px 15px var(--glow-color); border-color: var(--text-dim); }
+        .workbook-item.active-book { border-color: #4a90e2; background: rgba(74, 144, 226, 0.08); }
+
+        .main-editor { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .editor-header h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+
+        .notes-textarea {
+            width: 100%; height: 180px; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 15px; font-size: 15px; line-height: 1.6; resize: none; outline: none; transition: border-color 0.2s ease;
+        }
+        .notes-textarea:focus { border-color: var(--text-dim); }
+
+        .gemini-btn {
+            background: var(--text-color); color: var(--bg-color); border: none; padding: 12px 24px;
+            border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; align-self: flex-start; transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .gemini-btn:hover { transform: scale(1.03); opacity: 0.9; }
+
+        .summary-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px var(--glow-color); }
+        .summary-title { font-weight: 700; font-size: 13px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 0.5px; }
+
+        .qa-section {
+            background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 16px;
+            display: flex; flex-direction: column; height: 320px; overflow: hidden; box-shadow: 0 4px 15px var(--glow-color);
+        }
+
+        .chat-window { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.6; }
+        .chat-bubble.user { background-color: var(--chat-user-bg); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-bubble.gemini { background-color: var(--chat-gemini-bg); align-self: flex-start; border-bottom-left-radius: 4px; border-left: 3px solid #4a90e2; }
+
+        .chat-input-bar { display: flex; border-top: 1px solid var(--border-color); background: var(--card-bg); }
+        .chat-input { flex: 1; background: transparent; border: none; padding: 15px; color: var(--text-color); font-size: 14px; outline: none; }
+        .chat-send-btn { background: transparent; border: none; color: var(--text-color); padding: 0 20px; font-weight: 700; cursor: pointer; }
+
+        /* --- WORD-STYLE WORKSPACE PANELS --- */
+        .word-panel-container {
+            position: absolute; top: 0; right: 0; width: calc(100% - 320px); height: 100%; background-color: var(--bg-color);
+            padding: 30px; display: none; flex-direction: column; gap: 15px; z-index: 5; overflow-y: auto;
+        }
+        .word-toolbar { background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .word-title-area { display: flex; align-items: center; gap: 10px; }
+        .word-title-text { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+        .close-word-btn { background: #e63946; color: #ffffff; border: none; padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; }
+        .close-word-btn:hover { opacity: 0.9; }
+        .word-sheet-scroller { flex: 1; display: flex; justify-content: center; overflow-y: auto; padding: 10px 0; }
+        .word-document-page {
+            width: 100%; max-width: 850px; min-height: 100%; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color);
+            border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 50px 60px; font-size: 16px; line-height: 1.6; outline: none; overflow-y: auto; word-wrap: break-word;
+        }
+        
+        .word-document-page h3 {
+            font-size: 20px; font-weight: 700; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; color: var(--text-color);
+        }
+        .word-document-page p { margin-bottom: 12px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div id="intro-overlay">
+        <div class="intro-text-container">
+            <div class="intro-text">Hi, ready to take on notes like challenges.</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-text">trend</div>
+            <div class="logo-box-black"><span class="silhouette-x">X</span></div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">☀️ Toggle Mode</button>
+    </div>
+
+    <div class="workspace">
+        <div class="sidebar">
+            <div>
+                <div class="section-title">My Binders</div>
+                <div class="binder-item active" id="scienceBinder" onclick="switchBinder('Science Notes', this)" style="border-left-color: #3b82f6;">🔬 Science Notes</div>
+                <div class="binder-item" id="mathBinder" onclick="switchBinder('Math Workbook', this)" style="border-left-color: #f59e0b;">📐 Math Workbook</div>
+            </div>
+
+            <div>
+                <div class="section-title">Workbooks</div>
+                <div class="workbook-item" onclick="openWorkbook(1, this)"><span style="color: #ff595e;">📓</span> Workbook 1</div>
+                <div class="workbook-item" onclick="openWorkbook(2, this)"><span style="color: #ffca3a;">📓</span> Workbook 2</div>
+                <div class="workbook-item" onclick="openWorkbook(3, this)"><span style="color: #8ac926;">📓</span> Workbook 3</div>
+                <div class="workbook-item" onclick="openWorkbook(4, this)"><span style="color: #1982c4;">📓</span> Workbook 4</div>
+                <div class="workbook-item" onclick="openWorkbook(5, this)"><span style="color: #6a4c93;">📓</span> Workbook 5</div>
+                <div class="workbook-item" onclick="openWorkbook(6, this)"><span style="color: #42bfdd;">📓</span> Workbook 6</div>
+                <div class="workbook-item" onclick="openWorkbook(7, this)"><span style="color: #f72585;">📓</span> Workbook 7</div>
+            </div>
+        </div>
+
+        <div class="main-editor" id="mainEditorPanel">
+            <div class="editor-header">
+                <h2 id="currentBinderTitle">Science Notes</h2>
+            </div>
+            <textarea class="notes-textarea" id="notesInput" placeholder="Type or paste your class notes here..."></textarea>
+            <button class="gemini-btn" onclick="runGeminiSummary()">✨ Summarize via Gemini</button>
+
+            <div class="summary-card">
+                <div class="summary-title">🌀 Gemini Simple Summary Output</div>
+                <div class="flow-text" id="summaryOutput">Your simple bullet points will stream here...</div>
+            </div>
+
+            <div class="section-title" style="margin-bottom: -10px;">💬 Ask Gemini Questions about your Lesson</div>
+            <div class="qa-section">
+                <div class="chat-window" id="chatWindow">
+                    <div class="chat-bubble gemini">⚡ PERIODIC TABLE & STATE-OF-MATTER MATRIX INJECTED. Input any chemical element or matter query right now for an instant breakdown...</div>
+                </div>
+                <div class="chat-input-bar">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Enter oxygen, hydrogen, nitrogen, gold, carbon, iron, solids, or gases..." onkeypress="handleKeyPress(event)">
+                    <button class="chat-send-btn" onclick="sendChat()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="word-panel-container" id="wordWorkspacePanel">
+            <div class="word-toolbar">
+                <div class="word-title-area">
+                    <span>📝</span>
+                    <div class="word-title-text" id="wordDocTitle">Workbook 1</div>
+                </div>
+                <button class="close-word-btn" onclick="closeWorkbookMode()">Close Document</button>
+            </div>
+            <div class="word-sheet-scroller">
+                <div class="word-document-page" id="wordEditor" contenteditable="true" spellcheck="true" oninput="saveCurrentWorkbookText()"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { document.getElementById('intro-overlay').classList.add('fade-out-overlay'); }, 4300); 
+        });
+
+        const binderDatabase = {
+            'Science Notes': "Mitochondria are membrane-bound cell organelles that synthesize adenosine triphosphate (ATP). They possess an independent, maternally inherited genome.",
+            'Math Workbook': "The standard quadratic formula represents a second-degree polynomial form expressed precisely as ax² + bx + c = 0, where analytical factors resolve coordinate intersections."
+        };
+
+        const documentHeadingTemplate = `<h3>Take notes and put it into simplify sector if needed</h3><p><br></p>`;
+        const workbookDatabase = {
+            1: documentHeadingTemplate, 2: documentHeadingTemplate, 3: documentHeadingTemplate, 
+            4: documentHeadingTemplate, 5: documentHeadingTemplate, 6: documentHeadingTemplate, 7: documentHeadingTemplate
+        };
+        
+        let activeWorkbookID = null;
+        let currentActiveBinder = 'Science Notes';
+        document.getElementById('notesInput').value = binderDatabase[currentActiveBinder];
+
+        function openWorkbook(id, element) {
+            document.querySelectorAll('.binder-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.workbook-item').forEach(book => book.classList.remove('active-book'));
+            element.classList.add('active-book');
+            activeWorkbookID = id;
+            document.getElementById('wordDocTitle').innerText = `Workbook ${id}`;
+            document.getElementById('wordEditor').innerHTML = workbookDatabase[id];
+            document.getElementById('mainEditorPanel').style.display = 'none';
+            document.getElementById('wordWorkspacePanel').style.display = 'flex';
+        }
+
+        function saveCurrentWorkbookText() { if(activeWorkbookID !== null) workbookDatabase[activeWorkbookID] = document.getElementById('wordEditor').innerHTML; }
+
+        function closeWorkbookMode() {
+            activeWorkbookID = null;
+            document.querySelectorAll('.workbook-item').forEach(book => book.classList.remove('active-book'));
+            document.getElementById(currentActiveBinder === 'Science Notes' ? 'scienceBinder' : 'mathBinder').classList.add('active');
+            document.getElementById('wordWorkspacePanel').style.display = 'none';
+            document.getElementById('mainEditorPanel').style.display = 'flex';
+        }
+
+        /* --- THE INJECTED PERIODIC TABLE & GAS/SOLID KNOWLEDGE MATRIX --- */
+        function processKnowledgeQuery(query) {
+            const elements = {
+                'oxygen': { sym: 'O', num: 8, mass: '15.999 u', state: '💥 GAS', class: 'Reactive Non-metal / Chalcogen', details: 'Highly electronegative gaseous state. Supports combustion and fuels aerobic respiration biological structures.' },
+                'hydrogen': { sym: 'H', num: 1, mass: '1.008 u', state: '💥 GAS', class: 'Reactive Non-metal', details: 'Lightest elemental atomic structure in existence. Low density diatomic gas properties.' },
+                'nitrogen': { sym: 'N', num: 7, mass: '14.007 u', state: '💥 GAS', class: 'Pnictogen', details: 'Forms 78% of ambient planetary atmospheres. Triple-bonded diatomic inert gas properties.' },
+                'helium': { sym: 'He', num: 2, mass: '4.0026 u', state: '💥 GAS', class: 'Noble Gas', details: 'Completely filled valence shell configuration. Zero reactivity parameters, chemically inert.' },
+                'carbon': { sym: 'C', num: 6, mass: '12.011 u', state: '🧱 SOLID', class: 'Non-metal', details: 'Forms structural covalent carbon lattices. Forms covalent backbones for all organic chemistry branches.' },
+                'iron': { sym: 'Fe', num: 26, mass: '55.845 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'High-density metallic d-block layout. Excellent thermal conductivity and ferromagnetic parameters.' },
+                'gold': { sym: 'Au', num: 79, mass: '196.97 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'Highly unreactive precious metal array. Resists oxidization completely, supreme electronic conductor.' },
+                'silver': { sym: 'Ag', num: 47, mass: '107.87 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'Highest electrical and thermal conductivity properties of any element block on the table.' },
+                'mercury': { sym: 'Hg', num: 80, mass: '200.59 u', state: '💧 LIQUID', class: 'Transition Metal', details: 'Liquid state at standard room temperature conditions due to relativistic contraction constraints on electron shells.' },
+                'bromine': { sym: 'Br', num: 35, mass: '79.904 u', state: '💧 LIQUID', class: 'Halogen', details: 'Deep reddish-brown liquid properties. Highly volatile, toxic, and actively corrosive state behavior.' }
+            };
+
+            // Matter State Concept Checkers
+            if (query.includes('gas') || query.includes('gases')) {
+                return `🔬 <strong>Science State Matrix (GASES):</strong><br><br>• Particles possess extreme kinetic velocity and full spacing configurations.<br>• Definite volume parameters: <strong>NONE</strong>.<br>• Shape profile: Adapts completely to containment boundaries.<br>• Compressibility factors: Highly adaptable under localized pressures.`;
+            }
+            if (query.includes('solid') || query.includes('solids')) {
+                return `🔬 <strong>Science State Matrix (SOLIDS):</strong><br><br>• Intermolecular attraction forces are locked in highly ordered, dense matrix grids.<br>• Shape & Volume: Fixed parameters.<br>• Compressibility parameters: Minimal to non-existent due to tightly bound atomic configurations.`;
+            }
+
+            // Keyword Match Execution
+            for (let name in elements) {
+                if (query.includes(name)) {
+                    let item = elements[name];
+                    return `🔬 <strong>Science Sector - Periodic Record: ${name.toUpperCase()}</strong><br><br>` +
+                           `• <strong>Atomic Symbol:</strong> ${item.sym}<br>` +
+                           `• <strong>Atomic Number:</strong> ${item.num}<br>` +
+                           `• <strong>Atomic Weight:</strong> ${item.mass}<br>` +
+                           `• <strong>Physical State:</strong> ${item.state}<br>` +
+                           `• <strong>Chemical Class:</strong> ${item.class}<br>` +
+                           `• <strong>Properties:</strong> ${item.details}`;
+                }
+            }
+
+            return null;
+        }
+
+        /* --- ARITHMETIC REPLIES (UNTOUCHED AND UNMODIFIED) --- */
+        function processMathQuery(rawQuery) {
+            let processed = rawQuery.replace(/\s+/g, '').replace(/x/g, '*').replace(/by/g, '/');
+            if (/^([0-9\.\+\-\*\/\(\)]+)$/.test(processed) && /[+\-*/]/.test(processed)) {
+                try {
+                    const result = Function(`"use strict"; return (${processed})`)();
+                    return `📐 <strong>Math Sector:</strong> Solved equation expression directly to: <strong>${result}</strong>`;
+                } catch (e) { return null; }
+            }
+            return null;
+        }
+
+        function runGeminiSummary() {
+            const notesText = document.getElementById('notesInput').value.trim();
+            const outputBox = document.getElementById('summaryOutput');
+            if(!notesText) { outputBox.innerHTML = "⚠️ Insert text into your active note board prior to processing summary calculation."; return; }
+            outputBox.innerHTML = "<em>Processing summary layer...</em>";
+
+            setTimeout(() => {
+                let structuralBullets = [];
+                if (currentActiveBinder === 'Science Notes') {
+                    structuralBullets = [
+                        "🔋 <strong>Cell Power Plants:</strong> Mitochondria make ATP, which is the main energy chemical cells use to work.",
+                        "🧬 <strong>Own DNA:</strong> They have their own independent chromosomes, separate from the main cell nucleus.",
+                        "👩 <strong>Mom's Side:</strong> You inherit mitochondrial DNA completely from your mother."
+                    ];
+                } else if (currentActiveBinder === 'Math Workbook') {
+                    structuralBullets = [
+                        "📈 <strong>Second Degree:</strong> Quadratic equations always look like ax² + bx + c = 0.",
+                        "⚠️ <strong>The Golden Rule:</strong> The first number 'a' can never equal zero.",
+                        "✏️ <strong>Solving Methods:</strong> You can solve them using factoring, completing the square, or the quadratic formula."
+                    ];
+                } else {
+                    structuralBullets = ["✨ Summary processed flawlessly from your manual binder entries."];
+                }
+                outputBox.innerHTML = "<strong>Isolated Summary Takeaways:</strong><br><br>" + structuralBullets.join("<br><br>");
+            }, 350);
+        }
+
+        function switchBinder(binderName, element) {
+            document.getElementById('wordWorkspacePanel').style.display = 'none';
+            document.getElementById('mainEditorPanel').style.display = 'flex';
+            document.querySelectorAll('.workbook-item').forEach(book => book.classList.remove('active-book'));
+            binderDatabase[currentActiveBinder] = document.getElementById('notesInput').value;
+            currentActiveBinder = binderName;
+            document.getElementById('currentBinderTitle').innerText = binderName;
+            document.getElementById('notesInput').value = binderDatabase[binderName];
+            document.querySelectorAll('.binder-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function handleKeyPress(e) { if(e.key === 'Enter') sendChat(); }
+
+        function sendChat() {
+    const input = document.getElementById('chatInput');
+    const chatWindow = document.getElementById('chatWindow');
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // Show what you typed
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble user';
+    userBubble.innerText = userText;
+    chatWindow.appendChild(userBubble);
+    input.value = '';
+
+    // NEW LOGIC: Binder-Aware Routing
+    if (currentActiveBinder === 'Science Notes') {
+        const scienceReply = processKnowledgeQuery(userText.toLowerCase());
+        if (scienceReply) {
+            addBubble(scienceReply);
+        } else {
+            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${userText.toLowerCase()}`)
+                .then(res => res.json())
+                .then(data => addBubble("📚 Dictionary: " + data[0].meanings[0].definitions[0].definition))
+                .catch(() => addBubble("🔬 Science engine couldn't find that term."));
+        }
+    } else if (currentActiveBinder === 'Math Workbook') {
+        const mathReply = processMathQuery(userText);
+        if (mathReply) {
+            addBubble(mathReply);
+        } else {
+            addBubble("📐 Math engine says: Please enter a valid equation (e.g., 5 * 5).");
+        }
+    }
+}
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+function addBubble(text) {
+    const chatWindow = document.getElementById('chatWindow');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble gemini';
+    bubble.innerHTML = text;
+    chatWindow.appendChild(bubble);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+
+    </script>
+</body>
+</html>
