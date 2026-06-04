@@ -49,7 +49,6 @@
             position: relative;
         }
 
-        /* --- CINEMATIC FLUID-FLOW ALGERIAN INTRO --- */
         #intro-overlay {
             position: fixed;
             top: 0;
@@ -104,7 +103,6 @@
 
         @keyframes globalFadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* --- CORE APPLICATION UI --- */
         .header {
             background-color: #000000;
             height: 70px;
@@ -188,7 +186,6 @@
         .chat-input { flex: 1; background: transparent; border: none; padding: 15px; color: var(--text-color); font-size: 14px; outline: none; }
         .chat-send-btn { background: transparent; border: none; color: var(--text-color); padding: 0 20px; font-weight: 700; cursor: pointer; }
 
-        /* --- WORD-STYLE WORKSPACE PANELS --- */
         .word-panel-container {
             position: absolute; top: 0; right: 0; width: calc(100% - 320px); height: 100%; background-color: var(--bg-color);
             padding: 30px; display: none; flex-direction: column; gap: 15px; z-index: 5; overflow-y: auto;
@@ -203,7 +200,6 @@
             width: 100%; max-width: 850px; min-height: 100%; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color);
             border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 50px 60px; font-size: 16px; line-height: 1.6; outline: none; overflow-y: auto; word-wrap: break-word;
         }
-        
         .word-document-page h3 {
             font-size: 20px; font-weight: 700; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; color: var(--text-color);
         }
@@ -261,10 +257,9 @@
             <div class="section-title" style="margin-bottom: -10px;">💬 Ask Gemini Questions about your Lesson</div>
             <div class="qa-section">
                 <div class="chat-window" id="chatWindow">
-                    <div class="chat-bubble gemini">⚡ PERIODIC TABLE & STATE-OF-MATTER MATRIX INJECTED. Input any chemical element or matter query right now for an instant breakdown...</div>
                 </div>
                 <div class="chat-input-bar">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Enter oxygen, hydrogen, nitrogen, gold, carbon, iron, solids, or gases..." onkeypress="handleKeyPress(event)">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything..." onkeypress="handleKeyPress(event)">
                     <button class="chat-send-btn" onclick="sendChat()">Send</button>
                 </div>
             </div>
@@ -325,58 +320,6 @@
             document.getElementById('mainEditorPanel').style.display = 'flex';
         }
 
-        /* --- THE INJECTED PERIODIC TABLE & GAS/SOLID KNOWLEDGE MATRIX --- */
-        function processKnowledgeQuery(query) {
-            const elements = {
-                'oxygen': { sym: 'O', num: 8, mass: '15.999 u', state: '💥 GAS', class: 'Reactive Non-metal / Chalcogen', details: 'Highly electronegative gaseous state. Supports combustion and fuels aerobic respiration biological structures.' },
-                'hydrogen': { sym: 'H', num: 1, mass: '1.008 u', state: '💥 GAS', class: 'Reactive Non-metal', details: 'Lightest elemental atomic structure in existence. Low density diatomic gas properties.' },
-                'nitrogen': { sym: 'N', num: 7, mass: '14.007 u', state: '💥 GAS', class: 'Pnictogen', details: 'Forms 78% of ambient planetary atmospheres. Triple-bonded diatomic inert gas properties.' },
-                'helium': { sym: 'He', num: 2, mass: '4.0026 u', state: '💥 GAS', class: 'Noble Gas', details: 'Completely filled valence shell configuration. Zero reactivity parameters, chemically inert.' },
-                'carbon': { sym: 'C', num: 6, mass: '12.011 u', state: '🧱 SOLID', class: 'Non-metal', details: 'Forms structural covalent carbon lattices. Forms covalent backbones for all organic chemistry branches.' },
-                'iron': { sym: 'Fe', num: 26, mass: '55.845 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'High-density metallic d-block layout. Excellent thermal conductivity and ferromagnetic parameters.' },
-                'gold': { sym: 'Au', num: 79, mass: '196.97 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'Highly unreactive precious metal array. Resists oxidization completely, supreme electronic conductor.' },
-                'silver': { sym: 'Ag', num: 47, mass: '107.87 u', state: '🧱 SOLID', class: 'Transition Metal', details: 'Highest electrical and thermal conductivity properties of any element block on the table.' },
-                'mercury': { sym: 'Hg', num: 80, mass: '200.59 u', state: '💧 LIQUID', class: 'Transition Metal', details: 'Liquid state at standard room temperature conditions due to relativistic contraction constraints on electron shells.' },
-                'bromine': { sym: 'Br', num: 35, mass: '79.904 u', state: '💧 LIQUID', class: 'Halogen', details: 'Deep reddish-brown liquid properties. Highly volatile, toxic, and actively corrosive state behavior.' }
-            };
-
-            // Matter State Concept Checkers
-            if (query.includes('gas') || query.includes('gases')) {
-                return `🔬 <strong>Science State Matrix (GASES):</strong><br><br>• Particles possess extreme kinetic velocity and full spacing configurations.<br>• Definite volume parameters: <strong>NONE</strong>.<br>• Shape profile: Adapts completely to containment boundaries.<br>• Compressibility factors: Highly adaptable under localized pressures.`;
-            }
-            if (query.includes('solid') || query.includes('solids')) {
-                return `🔬 <strong>Science State Matrix (SOLIDS):</strong><br><br>• Intermolecular attraction forces are locked in highly ordered, dense matrix grids.<br>• Shape & Volume: Fixed parameters.<br>• Compressibility parameters: Minimal to non-existent due to tightly bound atomic configurations.`;
-            }
-
-            // Keyword Match Execution
-            for (let name in elements) {
-                if (query.includes(name)) {
-                    let item = elements[name];
-                    return `🔬 <strong>Science Sector - Periodic Record: ${name.toUpperCase()}</strong><br><br>` +
-                           `• <strong>Atomic Symbol:</strong> ${item.sym}<br>` +
-                           `• <strong>Atomic Number:</strong> ${item.num}<br>` +
-                           `• <strong>Atomic Weight:</strong> ${item.mass}<br>` +
-                           `• <strong>Physical State:</strong> ${item.state}<br>` +
-                           `• <strong>Chemical Class:</strong> ${item.class}<br>` +
-                           `• <strong>Properties:</strong> ${item.details}`;
-                }
-            }
-
-            return null;
-        }
-
-        /* --- ARITHMETIC REPLIES (UNTOUCHED AND UNMODIFIED) --- */
-        function processMathQuery(rawQuery) {
-            let processed = rawQuery.replace(/\s+/g, '').replace(/x/g, '*').replace(/by/g, '/');
-            if (/^([0-9\.\+\-\*\/\(\)]+)$/.test(processed) && /[+\-*/]/.test(processed)) {
-                try {
-                    const result = Function(`"use strict"; return (${processed})`)();
-                    return `📐 <strong>Math Sector:</strong> Solved equation expression directly to: <strong>${result}</strong>`;
-                } catch (e) { return null; }
-            }
-            return null;
-        }
-
         function runGeminiSummary() {
             const notesText = document.getElementById('notesInput').value.trim();
             const outputBox = document.getElementById('summaryOutput');
@@ -419,64 +362,59 @@
         function handleKeyPress(e) { if(e.key === 'Enter') sendChat(); }
 
         async function sendChat() {
-    const input = document.getElementById('chatInput');
-    const chatWindow = document.getElementById('chatWindow');
-    const userText = input.value.trim();
-    if (!userText) return;
+            const input = document.getElementById('chatInput');
+            const chatWindow = document.getElementById('chatWindow');
+            const userText = input.value.trim();
+            if (!userText) return;
 
-    // Show User Message
-    const userBubble = document.createElement('div');
-    userBubble.className = 'chat-bubble user';
-    userBubble.innerText = userText;
-    chatWindow.appendChild(userBubble);
-    input.value = '';
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.innerText = userText;
+            chatWindow.appendChild(userBubble);
+            input.value = '';
 
-    // Add thinking indicator
-    const thinkingBubble = document.createElement('div');
-    thinkingBubble.className = 'chat-bubble gemini';
-    thinkingBubble.innerHTML = "<em>Thinking...</em>";
-    chatWindow.appendChild(thinkingBubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+            const thinkingBubble = document.createElement('div');
+            thinkingBubble.className = 'chat-bubble gemini';
+            thinkingBubble.innerHTML = "<em>Thinking...</em>";
+            chatWindow.appendChild(thinkingBubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
 
-    // Direct Gemini API Call (No backend folder needed!)
-    const API_KEY = "YOUR_GEMINI_API_KEY"; // REPLACE WITH YOUR ACTUAL KEY
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            const API_KEY = "YOUR_GEMINI_API_KEY"; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: userText }] }]
-            })
-        });
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userText }] }]
+                    })
+                });
 
-        const data = await response.json();
-        chatWindow.removeChild(thinkingBubble);
-        
-        // Extract the reply
-        const reply = data.candidates[0].content.parts[0].text;
-        addBubble(reply);
-    } catch (error) {
-        chatWindow.removeChild(thinkingBubble);
-        addBubble("⚠️ Connection error. Please check your API key.");
-    }
-}
+                const data = await response.json();
+                chatWindow.removeChild(thinkingBubble);
+                
+                const reply = data.candidates[0].content.parts[0].text;
+                addBubble(reply);
+            } catch (error) {
+                chatWindow.removeChild(thinkingBubble);
+                addBubble("⚠️ Connection error. Please check your API key.");
+            }
+        }
+
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme');
             document.body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
         }
 
-function addBubble(text) {
-    const chatWindow = document.getElementById('chatWindow');
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble gemini';
-    bubble.innerHTML = text;
-    chatWindow.appendChild(bubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-
+        function addBubble(text) {
+            const chatWindow = document.getElementById('chatWindow');
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble gemini';
+            bubble.innerHTML = text;
+            chatWindow.appendChild(bubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
     </script>
 </body>
 </html>
