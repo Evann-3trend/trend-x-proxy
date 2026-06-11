@@ -362,49 +362,52 @@
         function handleKeyPress(e) { if(e.key === 'Enter') sendChat(); }
 
         async function sendChat() {
-            const input = document.getElementById('chatInput');
-            const chatWindow = document.getElementById('chatWindow');
-            const userText = input.value.trim();
-            if (!userText) return;
+    const input = document.getElementById('chatInput');
+    const chatWindow = document.getElementById('chatWindow');
+    const userText = input.value.trim();
+    if (!userText) return;
 
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-bubble user';
-            userBubble.innerText = userText;
-            chatWindow.appendChild(userBubble);
-            input.value = '';
+    // Show user message
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble user';
+    userBubble.innerText = userText;
+    chatWindow.appendChild(userBubble);
+    input.value = '';
 
-            const thinkingBubble = document.createElement('div');
-            thinkingBubble.className = 'chat-bubble gemini';
-            thinkingBubble.innerHTML = "<em>Thinking...</em>";
-            chatWindow.appendChild(thinkingBubble);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+    // Show thinking bubble
+    const thinkingBubble = document.createElement('div');
+    thinkingBubble.className = 'chat-bubble gemini';
+    thinkingBubble.innerHTML = "<em>Thinking...</em>";
+    chatWindow.appendChild(thinkingBubble);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 
-            const API_KEY = prompt("Please enter your Gemini API Key:");
-const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    // API Call
+    const API_KEY = prompt("Please enter your Gemini API Key:");
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-try {
-  const response = await fetch(url, {= "GEMINI_KEY"; 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: userText }] }]
+            })
+        });
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userText }] }]
-                    })
-                });
-
-                const data = await response.json();
-                chatWindow.removeChild(thinkingBubble);
-                
-                const reply = data.candidates[0].content.parts[0].text;
-                addBubble(reply);
-            } catch (error) {
-                chatWindow.removeChild(thinkingBubble);
-                addBubble("⚠️ Connection error. Please check your API key.");
-            }
+        const data = await response.json();
+        chatWindow.removeChild(thinkingBubble);
+        
+        // Ensure we got a valid response
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+            addBubble(data.candidates[0].content.parts[0].text);
+        } else {
+            addBubble("⚠️ Error: Check your API Key or Quota.");
         }
+    } catch (error) {
+        chatWindow.removeChild(thinkingBubble);
+        addBubble("⚠️ Connection error. Please check your network.");
+    }
+}
 
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme');
